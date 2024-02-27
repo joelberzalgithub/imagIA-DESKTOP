@@ -61,6 +61,7 @@ class LayoutLoginState extends State<LayoutLogin> {
 
       if (response.statusCode == 200) {
         if (kDebugMode) { print('Login Successful: ${response.body}'); }
+        await saveUrl(url);
       } else {
         if (kDebugMode) { print('Failed to login: ${response.statusCode}'); }
       }
@@ -99,7 +100,6 @@ class LayoutLoginState extends State<LayoutLogin> {
                 ElevatedButton(
                   onPressed: () async {
                     login();
-                    // await saveUrl(urlController.text);
                   },
                   child: const Text('Iniciar Sessió'),
                 ),
