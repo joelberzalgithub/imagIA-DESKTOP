@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:toastification/toastification.dart';
+
 
 class LayoutLogin extends StatefulWidget {
   const LayoutLogin({Key? key}) : super(key: key);
@@ -31,16 +33,19 @@ class LayoutLoginState extends State<LayoutLogin> {
   Future<void> readUrl() async {
     try {
       final file = File('imagIA_server_url.txt');
-      final url = await file.readAsString();
-      setState(() {
-        urlController.text = url;
-      });
+      if (await file.exists()) {
+        final url = await file.readAsString();
+        setState(() {
+          urlController.text = url;
+        });
+      }
+      
     } catch (e) {
       if (kDebugMode) { print("Error reading server URL: $e"); }
     }
   }
 
-  Future<void> login() async {
+  Future<void> login(BuildContext context) async {
     final url = urlController.text;
     final email = emailController.text;
     final password = passwordController.text;
@@ -59,15 +64,71 @@ class LayoutLoginState extends State<LayoutLogin> {
         body: jsonData,
       );
 
-      if (response.statusCode == 200) {
-        if (kDebugMode) { print('Login Successful: ${response.body}'); }
-        await saveUrl(url);
-      } else {
-        if (kDebugMode) { print('Failed to login: ${response.statusCode}'); }
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        if (jsonResponse['status'] == "OK") {
+          
+          print("login exitos");
+          showToast(context, "Login com admin exitos", Colors.green);
+          await saveUrl(url);
+          
+        } else {
+          showToast(context, "Login com admin NO exitos", Colors.red);
+          print("login NO exitos");
       }
     } catch (e) {
-      if (kDebugMode) { print('Exception during login: $e'); }
+      print("Error al enviar peticio");
     }
+  }
+
+  void showToast(BuildContext context, String message, Color color) {
+    toastification.show(
+      context: context,
+      type: ToastificationType.success,
+      style: ToastificationStyle.flat,
+      autoCloseDuration: const Duration(seconds: 5),
+      title: Text(message),
+      description: RichText(text: const TextSpan(text: 'This is a sample toast message. ')),
+      alignment: Alignment.topRight,
+      direction: TextDirection.ltr,
+      animationDuration: const Duration(milliseconds: 300),
+      animationBuilder: (context, animation, alignment, child) {
+        return FadeTransition(
+          opacity: animation,
+          child: ScaleTransition(
+            scale: animation,
+            child: child,
+          ),
+        );
+      },
+      icon: const Icon(Icons.check),
+      primaryColor: color,
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: const [
+        BoxShadow(
+          color: Color(0x07000000),
+          blurRadius: 16,
+          offset: Offset(0, 16),
+          spreadRadius: 0,
+        )
+      ],
+      showProgressBar: true,
+      closeButtonShowType: CloseButtonShowType.onHover,
+      closeOnClick: false,
+      pauseOnHover: true,
+      dragToClose: true,
+      applyBlurEffect: true,
+      callbacks: ToastificationCallbacks(
+        onTap: (toastItem) => print('Toast ${toastItem.id} tapped'),
+        onCloseButtonTap: (toastItem) => print('Toast ${toastItem.id} close button tapped'),
+        onAutoCompleteCompleted: (toastItem) => print('Toast ${toastItem.id} auto complete completed'),
+        onDismissed: (toastItem) => print('Toast ${toastItem.id} dismissed'),
+      ),
+);
+
   }
   
   @override
@@ -99,7 +160,7 @@ class LayoutLoginState extends State<LayoutLogin> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-                    login();
+                    login(context);
                   },
                   child: const Text('Iniciar Sessió'),
                 ),
