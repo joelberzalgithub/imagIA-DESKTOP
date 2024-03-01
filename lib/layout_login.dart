@@ -67,16 +67,26 @@ class LayoutLoginState extends State<LayoutLogin> {
         Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         if (jsonResponse['status'] == "OK") {
           
-          print("login exitos");
+          if (kDebugMode) {
+            print("login exitos");
+          }
+          // ignore: use_build_context_synchronously
           showToast(context, "Login com admin exitos", Colors.green);
           await saveFiles(url, jsonResponse);
           
+          Navigator.pushReplacementNamed(context, 'users');
+          
         } else {
+          // ignore: use_build_context_synchronously
           showToast(context, "Login com admin NO exitos", Colors.red);
-          print("login NO exitos");
+          if (kDebugMode) {
+            print("login NO exitos");
+          }
       }
     } catch (e) {
-      print("Error al enviar peticio");
+      if (kDebugMode) {
+        print("Error al enviar peticio");
+      }
     }
   }
 
@@ -122,13 +132,16 @@ class LayoutLoginState extends State<LayoutLogin> {
       dragToClose: true,
       applyBlurEffect: true,
       callbacks: ToastificationCallbacks(
+        // ignore: avoid_print
         onTap: (toastItem) => print('Toast ${toastItem.id} tapped'),
+        // ignore: avoid_print
         onCloseButtonTap: (toastItem) => print('Toast ${toastItem.id} close button tapped'),
+        // ignore: avoid_print
         onAutoCompleteCompleted: (toastItem) => print('Toast ${toastItem.id} auto complete completed'),
+        // ignore: avoid_print
         onDismissed: (toastItem) => print('Toast ${toastItem.id} dismissed'),
       ),
-);
-
+    );
   }
   
   @override
