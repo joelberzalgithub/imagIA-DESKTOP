@@ -25,7 +25,7 @@ class LayoutLoginState extends State<LayoutLogin> {
     readUrl();
   }
 
-  Future<void> saveUrl(String url) async {
+  Future<void> saveFiles(String url, Map<String, dynamic> json) async {
     final file = File('imagIA_server_url.txt');
     await file.writeAsString(url);
   }
@@ -69,7 +69,7 @@ class LayoutLoginState extends State<LayoutLogin> {
           
           print("login exitos");
           showToast(context, "Login com admin exitos", Colors.green);
-          await saveUrl(url);
+          await saveFiles(url, jsonResponse);
           
         } else {
           showToast(context, "Login com admin NO exitos", Colors.red);
