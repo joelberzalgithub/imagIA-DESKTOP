@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cupertino_base/app_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 
 
@@ -45,7 +47,7 @@ class LayoutLoginState extends State<LayoutLogin> {
     }
   }
 
-  Future<void> login(BuildContext context) async {
+  Future<void> login(BuildContext context, AppData appData) async {
     final url = urlController.text;
     final email = emailController.text;
     final password = passwordController.text;
@@ -73,6 +75,7 @@ class LayoutLoginState extends State<LayoutLogin> {
           // ignore: use_build_context_synchronously
           showToast(context, "Login com admin exitos", Colors.green);
           await saveUrl(url);
+          appData.readUserData();
           // ignore: use_build_context_synchronously
           Navigator.pushReplacementNamed(context, 'users');
           
@@ -146,6 +149,7 @@ class LayoutLoginState extends State<LayoutLogin> {
   
   @override
   Widget build(BuildContext context) {
+    AppData appData = Provider.of<AppData>(context);
     return Scaffold(
       body: Center(
         child: Padding(
@@ -173,7 +177,9 @@ class LayoutLoginState extends State<LayoutLogin> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-                    login(context);
+                    // login(context, appData);
+                    appData.readUserData();
+                    Navigator.pushReplacementNamed(context, 'users');
                   },
                   child: const Text('Iniciar Sessió'),
                 ),
