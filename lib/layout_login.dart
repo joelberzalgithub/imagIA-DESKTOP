@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cupertino_base/app_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 
 
@@ -18,16 +20,24 @@ class LayoutLoginState extends State<LayoutLogin> {
   final TextEditingController urlController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
+  
   @override
   void initState() {
     super.initState();
     readUrl();
   }
 
-  Future<void> saveFiles(String url, Map<String, dynamic> json) async {
-    final file = File('imagIA_server_url.txt');
-    await file.writeAsString(url);
+  Future<void> saveFiles(String url) async {
+    // Save url in txt
+    try {
+      final file = File('imagIA_server_url.txt');
+      await file.writeAsString(url);
+      
+    } catch (e) {
+        print("Error saving text file");
+    }
+    
+
   }
 
   Future<void> readUrl() async {
@@ -45,7 +55,7 @@ class LayoutLoginState extends State<LayoutLogin> {
     }
   }
 
-  Future<void> login(BuildContext context) async {
+  Future<void> login(BuildContext context, AppData appData) async {
     final url = urlController.text;
     final email = emailController.text;
     final password = passwordController.text;
@@ -66,13 +76,14 @@ class LayoutLoginState extends State<LayoutLogin> {
 
         Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         if (jsonResponse['status'] == "OK") {
-          
+          appData.adminToken = jsonResponse["data"]["api_key"];
+
           if (kDebugMode) {
             print("login exitos");
           }
           // ignore: use_build_context_synchronously
           showToast(context, "Login com admin exitos", Colors.green);
-          await saveFiles(url, jsonResponse);
+          await saveFiles(url);
           
           Navigator.pushReplacementNamed(context, 'users');
           
@@ -146,6 +157,8 @@ class LayoutLoginState extends State<LayoutLogin> {
   
   @override
   Widget build(BuildContext context) {
+    AppData appData = Provider.of<AppData>(context);
+
     return Scaffold(
       body: Center(
         child: Padding(
@@ -173,7 +186,7 @@ class LayoutLoginState extends State<LayoutLogin> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-                    login(context);
+                    login(context, appData);
                   },
                   child: const Text('Iniciar Sessió'),
                 ),
