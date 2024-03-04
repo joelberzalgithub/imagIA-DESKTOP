@@ -84,7 +84,8 @@ class LayoutLoginState extends State<LayoutLogin> {
           // ignore: use_build_context_synchronously
           showToast(context, "Login com admin exitos", Colors.green);
           await saveFiles(url);
-          
+          appData.readUserData(appData.adminToken);
+          // ignore: use_build_context_synchronously
           Navigator.pushReplacementNamed(context, 'users');
           
         } else {
@@ -158,7 +159,6 @@ class LayoutLoginState extends State<LayoutLogin> {
   @override
   Widget build(BuildContext context) {
     AppData appData = Provider.of<AppData>(context);
-
     return Scaffold(
       body: Center(
         child: Padding(
