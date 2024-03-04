@@ -75,7 +75,7 @@ class LayoutLoginState extends State<LayoutLogin> {
           // ignore: use_build_context_synchronously
           showToast(context, "Login com admin exitos", Colors.green);
           await saveUrl(url);
-          appData.readUserData();
+          // appData.readUserData();
           // ignore: use_build_context_synchronously
           Navigator.pushReplacementNamed(context, 'users');
           
@@ -178,7 +178,7 @@ class LayoutLoginState extends State<LayoutLogin> {
                 ElevatedButton(
                   onPressed: () async {
                     // login(context, appData);
-                    appData.readUserData();
+                    // appData.readUserData();
                     Navigator.pushReplacementNamed(context, 'users');
                   },
                   child: const Text('Iniciar Sessió'),
