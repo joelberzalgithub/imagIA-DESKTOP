@@ -76,8 +76,8 @@ class LayoutLoginState extends State<LayoutLogin> {
 
         Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         if (jsonResponse['status'] == "OK") {
-          appData.adminToken = jsonResponse["data"]["api_key"];
-
+          // appData.adminToken = jsonResponse["data"]["api_key"];
+          appData.adminToken = "sxw34pG3BCtS";
           if (kDebugMode) {
             print("login exitos");
           }
