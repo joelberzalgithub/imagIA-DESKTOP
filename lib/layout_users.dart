@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,6 +11,8 @@ class LayoutUsers extends StatefulWidget {
 }
 
 class LayoutUserState extends State<LayoutUsers> {
+  String adminToken = "";
+
   @override
   void initState() {
     super.initState();
@@ -25,8 +26,11 @@ class LayoutUserState extends State<LayoutUsers> {
           padding: const EdgeInsets.all(16.0),
           child: Consumer<AppData>(
             builder: (context, appData, child) {
-              final standardUsers = appData.userData.where((userData) => userData['pla'] == 'Free').toList();
-              final premiumUsers = appData.userData.where((userData) => userData['pla'] == 'Premium').toList();
+              adminToken = appData.adminToken;
+              final standardUsers =
+                  appData.userData.where((userData) => userData['pla'] == 'Free').toList();
+              final premiumUsers =
+                  appData.userData.where((userData) => userData['pla'] == 'Premium').toList();
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: Row(
@@ -85,14 +89,12 @@ class LayoutUserState extends State<LayoutUsers> {
       padding: const EdgeInsets.only(bottom: 16.0),
       child: GestureDetector(
         onTap: () {
-          if (kDebugMode) {
-            print(userData['email']);
-          }
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
               title: const Text('Canviar plà de l\'usuari'),
-              content: Text('Vols canviar el plà de ${userData['nickname']} a ${userData['pla'] == 'Free' ? 'Premium' : 'Free'}?'),
+              content: Text(
+                  'Vols canviar el plà de ${userData['nickname']} a ${userData['pla'] == 'Free' ? 'Premium' : 'Free'}?'),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -101,10 +103,13 @@ class LayoutUserState extends State<LayoutUsers> {
                   child: const Text('Cancel·lar'),
                 ),
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     final newPlan = userData['pla'] == 'Free' ? 'Premium' : 'Free';
-                    appData.changeUserPlan(userData['email'], newPlan);
+                    final email = userData['email'];
+                    appData.changeUserPlan(email, newPlan);
                     Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('El plà de l\'usuari s\'ha canviat amb éxit!')));
                   },
                   child: const Text('Canviar'),
                 ),

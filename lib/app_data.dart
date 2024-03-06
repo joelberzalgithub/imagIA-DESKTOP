@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class AppData with ChangeNotifier {
-  String adminToken = "xd";
+  String adminToken = "";
   List<Map<String, dynamic>> userData = [];
   
   Future<void> readUserData(String token) async {

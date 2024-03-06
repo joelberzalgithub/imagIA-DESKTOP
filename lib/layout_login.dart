@@ -34,10 +34,10 @@ class LayoutLoginState extends State<LayoutLogin> {
       await file.writeAsString(url);
       
     } catch (e) {
-        print("Error saving text file");
+        if (kDebugMode) {
+          print("Error saving text file");
+        }
     }
-    
-
   }
 
   Future<void> readUrl() async {
@@ -76,8 +76,7 @@ class LayoutLoginState extends State<LayoutLogin> {
 
         Map<String, dynamic> jsonResponse = jsonDecode(response.body);
         if (jsonResponse['status'] == "OK") {
-          // appData.adminToken = jsonResponse["data"]["api_key"];
-          appData.adminToken = "sxw34pG3BCtS";
+          appData.adminToken = jsonResponse["data"]["api_key"];
           if (kDebugMode) {
             print("login exitos");
           }
