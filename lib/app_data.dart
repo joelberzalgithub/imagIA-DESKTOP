@@ -46,4 +46,43 @@ class AppData with ChangeNotifier {
       }
     }
   }
+
+  Future<void> fetchUserData() async {
+    try {
+      var response = await http.get(
+        Uri.parse('https://ams24.ieti.site/api/users/admin_get_list'),
+        headers: {
+          'Authorization': 'Bearer $adminToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(response.body);
+        
+        var userData = jsonResponse['data'];
+        
+        for (var user in userData) {
+          if (kDebugMode) { print('Nickname: ${user['nickname']}'); }
+          if (kDebugMode) { print('Email: ${user['email']}'); }
+          if (kDebugMode) { print('Telephone: ${user['telefon']}'); }
+          if (kDebugMode) { print('Validated: ${user['validat']}'); }
+          if (kDebugMode) { print('Quota Total: ${user['quota']['total']}'); }
+          if (kDebugMode) { print('Quota Consumed: ${user['quota']['consumida']}'); }
+          if (kDebugMode) { print('Quota Available: ${user['quota']['disponible']}'); }
+          if (kDebugMode) { print('Groups: ${user['grups']}'); }
+          if (kDebugMode) { print('-------------------'); }
+        }
+        
+        if (kDebugMode) { print('Message: ${jsonResponse['message']}'); }
+        if (kDebugMode) { print('Status: ${jsonResponse['status']}'); }
+        notifyListeners();
+      } else {
+        if (kDebugMode) { print('Request failed with status: ${response.statusCode}'); }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Exception: $e');
+      }
+    }
+  }
 }

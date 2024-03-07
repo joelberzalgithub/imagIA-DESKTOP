@@ -1,4 +1,8 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import 'app_data.dart';
@@ -106,10 +110,22 @@ class LayoutUserState extends State<LayoutUsers> {
                   onPressed: () async {
                     final newPlan = userData['pla'] == 'Free' ? 'Premium' : 'Free';
                     final email = userData['email'];
-                    appData.changeUserPlan(email, newPlan);
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    final tfn = userData['telefon'];
+                    final response = await sendPlanChangeRequest(tfn, newPlan);
+                    final jsonResponse = jsonDecode(response.body);
+                    if (jsonResponse['status'] == "OK") {
+                      await appData.fetchUserData();
+                      appData.changeUserPlan(email, newPlan);
+                      // ignore: use_build_context_synchronously
+                      Navigator.pop(context);
+                      // ignore: use_build_context_synchronously
+                      ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('El plà de l\'usuari s\'ha canviat amb éxit!')));
+                    } else {
+                      if (kDebugMode) {
+                        print('Failed to change plan: ${jsonResponse['message']}');
+                      }
+                    }
                   },
                   child: const Text('Canviar'),
                 ),
@@ -144,5 +160,18 @@ class LayoutUserState extends State<LayoutUsers> {
         ),
       ),
     );
+  }
+
+  Future<http.Response> sendPlanChangeRequest(String tfn, String newPlan) async {
+    final Map<String, dynamic> requestData = {
+      'phone_number': tfn,
+      'plan': newPlan,
+    };
+    final response = await http.post(
+      Uri.parse('https://ams24.ieti.site/api/users/admin_change_plan'),
+      body: jsonEncode(requestData),
+      headers: {'Content-Type': 'application/json', 'Authorization': "Bearer $adminToken"},
+    );
+    return response;
   }
 }
