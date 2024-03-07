@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'layout_login.dart';
+import 'layout_users.dart';
 
 // Main application widget
 class App extends StatefulWidget {
@@ -20,6 +21,7 @@ class AppState extends State<App> {
       home: const LayoutLogin(),
       routes: {
         'login': (context) => const LayoutLogin(),
+        'users': (context) => const LayoutUsers()
       },
     );
   }
